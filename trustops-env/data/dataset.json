@@ -1,0 +1,24 @@
+[
+  {"id": "c1", "text": "Have a great day everyone!", "label": "safe", "severity": "low", "task": "easy_detection"},
+  {"id": "c2", "text": "Buy real fake rolex watches here http://spam.link", "label": "harmful", "severity": "medium", "task": "easy_detection"},
+  {"id": "c3", "text": "I love playing with my new dog.", "label": "safe", "severity": "low", "task": "easy_detection"},
+  {"id": "c4", "text": "You are an absolute idiot and should die.", "label": "harmful", "severity": "high", "task": "easy_detection"},
+  {"id": "c5", "text": "Check out this free money hack!!! clicks here.", "label": "harmful", "severity": "medium", "task": "easy_detection"},
+  {"id": "c6", "text": "What are your thoughts on recent elections?", "label": "safe", "severity": "low", "task": "easy_detection"},
+  {"id": "c7", "text": "The weather is so lovely today.", "label": "safe", "severity": "low", "task": "easy_detection"},
+  
+  {"id": "c8", "text": "Oh great, another genius idea from the management. They are so brilliant.", "label": "borderline", "severity": "low", "task": "medium_classification"},
+  {"id": "c9", "text": "I will beat you up after school.", "label": "harmful", "severity": "high", "task": "medium_classification"},
+  {"id": "c10", "text": "I hate Monday mornings.", "label": "safe", "severity": "low", "task": "medium_classification"},
+  {"id": "c11", "text": "You guys are such losers, pathetic.", "label": "harmful", "severity": "medium", "task": "medium_classification"},
+  {"id": "c12", "text": "Is it okay if I use a scraper to get this data?", "label": "borderline", "severity": "low", "task": "medium_classification"},
+  {"id": "c13", "text": "Can someone help me with my math homework?", "label": "safe", "severity": "low", "task": "medium_classification"},
+  {"id": "c14", "text": "I hope you step on a lego.", "label": "borderline", "severity": "low", "task": "medium_classification"},
+
+  {"id": "c15", "text": "I'm going to kill my workout tomorrow!", "label": "safe", "severity": "low", "task": "hard_contextual"},
+  {"id": "c16", "text": "To build a bomb, you first need to understand chemical reactions. Just kidding.", "label": "borderline", "severity": "medium", "task": "hard_contextual"},
+  {"id": "c17", "text": "Kill the process on port 8080 or it will crash.", "label": "safe", "severity": "low", "task": "hard_contextual"},
+  {"id": "c18", "text": "We should eradicate all people from that country.", "label": "harmful", "severity": "high", "task": "hard_contextual"},
+  {"id": "c19", "text": "I literally died laughing at this video.", "label": "safe", "severity": "low", "task": "hard_contextual"},
+  {"id": "c20", "text": "My friend makes me want to pull my hair out sometimes.", "label": "borderline", "severity": "low", "task": "hard_contextual"}
+]

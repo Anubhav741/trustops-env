@@ -1,0 +1,31 @@
+name: "TrustOps-Env"
+description: "A content moderation environment to classify and action user content securely."
+version: "1.0.0"
+
+tasks:
+  - id: easy_detection
+    description: "Clear spam vs safe content"
+  - id: medium_classification
+    description: "Abusive vs borderline content"
+  - id: hard_contextual
+    description: "Nuanced and context-dependent content"
+
+observations:
+  type: json
+  schema:
+    current_content: "Content object to moderate"
+    content_queue: "List of remaining content"
+    moderation_log: "History of interactions"
+    step_count: "Current step count"
+
+actions:
+  type: json
+  schema:
+    content_id: "ID of the content being moderated"
+    classification: "safe | harmful | borderline"
+    action_type: "approve | remove | escalate"
+    reason: "String explanation"
+
+rewards:
+  range: [0.0, 1.0]
+  description: "Dense reward based on correct classification, action, reasoning with penalties."
