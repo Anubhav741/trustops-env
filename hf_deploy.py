@@ -20,7 +20,7 @@ api.create_repo(repo_id=repo_id, repo_type="space", space_sdk="gradio", exist_ok
 
 print(f"Uploading files from trustops-env...")
 api.upload_folder(
-    folder_path="/Users/anubhavgupta/Desktop/Scaler1/trustops-env",
+    folder_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), "trustops-env"),
     repo_id=repo_id,
     repo_type="space",
     ignore_patterns=["__pycache__/*", "*.pyc"]
