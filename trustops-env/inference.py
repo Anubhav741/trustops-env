@@ -17,6 +17,11 @@ client = OpenAI(
     base_url=API_BASE_URL if API_BASE_URL else None,
 )
 
+import gradio as gr
+import io
+import contextlib
+import sys
+
 def get_env(task_name: str):
     if task_name == "medium_classification":
         return get_medium_classification_task()
@@ -75,66 +80,89 @@ def call_model(state, step_count) -> dict:
     )
     return json.loads(response.choices[0].message.content)
 
-def run_episode():
-    from env import Action
+def run_episode_and_capture():
+    f = io.StringIO()
+    with contextlib.redirect_stdout(f):
+        from env import Action
 
-    env = get_env(TASK_NAME)
-    state = env.reset()
-    done = False
-    steps = 0
-    rewards = []
+        env = get_env(TASK_NAME)
+        state = env.reset()
+        done = False
+        steps = 0
+        rewards = []
 
-    print(f"[START] task={TASK_NAME} env={ENV_NAME} model={MODEL_NAME}", flush=True)
+        print(f"[START] task={TASK_NAME} env={ENV_NAME} model={MODEL_NAME}", flush=True)
 
-    while not done:
-        error_str = "null"
-        reward = 0.0
-        action_str = "null"
+        while not done:
+            error_str = "null"
+            reward = 0.0
+            action_str = "null"
 
-        try:
-            parsed = call_model(state, steps)
-            action_obj = Action(**parsed)
-            action_str = json.dumps({
-                "action_type": action_obj.action_type,
-                "reason": action_obj.reason
-            }, separators=(',', ':'))
-            state, reward, done = env.step(action_obj)
-        except Exception as exc:
-            error_str = str(exc).replace("\n", " ")
             try:
-                fallback = Action(
-                    content_id=state.current_content.id if state.current_content else "unknown",
-                    classification="borderline",
-                    action_type="escalate",
-                    reason="fallback on error",
-                )
+                parsed = call_model(state, steps)
+                action_obj = Action(**parsed)
                 action_str = json.dumps({
-                    "action_type": fallback.action_type,
-                    "reason": fallback.reason
+                    "action_type": action_obj.action_type,
+                    "reason": action_obj.reason
                 }, separators=(',', ':'))
-                state, reward, done = env.step(fallback)
-            except Exception:
-                done = True
+                state, reward, done = env.step(action_obj)
+            except Exception as exc:
+                error_str = str(exc).replace("\n", " ")
+                try:
+                    fallback = Action(
+                        content_id=state.current_content.id if state.current_content else "unknown",
+                        classification="borderline",
+                        action_type="escalate",
+                        reason="fallback on error",
+                    )
+                    action_str = json.dumps({
+                        "action_type": fallback.action_type,
+                        "reason": fallback.reason
+                    }, separators=(',', ':'))
+                    state, reward, done = env.step(fallback)
+                except Exception:
+                    done = True
 
-        steps += 1
-        rewards.append(reward)
+            steps += 1
+            rewards.append(reward)
 
-        done_str = "true" if done else "false"
+            done_str = "true" if done else "false"
+
+            print(
+                f"[STEP] step={steps} action={action_str} reward={reward:.2f} "
+                f"done={done_str} error={error_str}",
+                flush=True,
+            )
+
+        final_score = sum(rewards) / len(rewards) if rewards else 0.0
+        success_str = "true" if final_score > 0.0 else "false"
+        rewards_str = ",".join(f"{r:.2f}" for r in rewards)
 
         print(
-            f"[STEP] step={steps} action={action_str} reward={reward:.2f} "
-            f"done={done_str} error={error_str}",
+            f"[END] success={success_str} steps={steps} score={final_score:.3f} rewards={rewards_str}",
             flush=True,
         )
+    
+    return f.getvalue()
 
-    final_score = sum(rewards) / len(rewards) if rewards else 0.0
-    success_str = "true" if final_score > 0.0 else "false"
-    rewards_str = ",".join(f"{r:.2f}" for r in rewards)
+def run_interface():
+    output_text = run_episode_and_capture()
+    return output_text
 
-    print(
-        f"[END] success={success_str} steps={steps} score={final_score:.3f} rewards={rewards_str}",
-        flush=True,
-    )
+# Run evaluation once for logs and UI
+initial_logs = run_interface()
+
+demo = gr.Interface(
+    fn=run_interface,
+    inputs=[],
+    outputs=gr.Code(label="Observation Logs", language="markdown", value=initial_logs),
+    title="TrustOps-Env Moderation Agent Result",
+    description="Deterministic evaluation log for content moderation benchmarks."
+)
 
 if __name__ == "__main__":
-    run_episode()
+    # Also run once in console for logging purity in HuggingFace logs
+    print(initial_logs)
+    # Launch Gradio for the UI
+    demo.launch(server_name="0.0.0.0", server_port=7860)
+

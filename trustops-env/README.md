@@ -1,3 +1,13 @@
+---
+title: TrustOps Env
+emoji: 🚀
+colorFrom: blue
+colorTo: green
+sdk: gradio
+app_file: inference.py
+pinned: false
+---
+
 # TrustOps-Env
 
 ## Problem Description
@@ -38,9 +48,9 @@ python inference.py
 ```
 
 ## Expected Output
-```
+```text
 [START]
-[STEP] step=1 reward=1.0
-...
-[END] final_score=0.9
+[STEP]
+[STEP]
+[END]
 ```
